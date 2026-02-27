@@ -1,4 +1,4 @@
-name: Flutter APK Build
+name: Build Flutter APK
 
 on:
   push:
@@ -9,24 +9,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
+          channel: 'stable'
 
-      - name: Create Flutter Project Structure
-        run: |
-          flutter create .
-          flutter pub get
+      - name: Create Project
+        run: flutter create .
 
-      - name: Build APK
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Release APK
         run: flutter build apk --release
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: app-release
+          name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
